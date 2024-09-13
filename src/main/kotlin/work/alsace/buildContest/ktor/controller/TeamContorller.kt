@@ -41,6 +41,10 @@ fun Route.team(plugin: BuildContest) {
             call.respond(HttpStatusCode.BadRequest, "teamId 格式不正确。只能包含字母、数字和下划线，长度为 3-10 个字符。")
             return@post
         }
+        if (configManager.isTeamIdDuplicate(teamId)) {
+            call.respond(HttpStatusCode.BadRequest, "队伍 $teamId 已存在!")
+            return@post
+        }
 
         if (!FieldValidator.validate("teamName", teamName, teamNameRegex)) {
             call.respond(HttpStatusCode.BadRequest, "teamName 格式不正确。长度必须为 3-10 个字符。")
@@ -50,7 +54,10 @@ fun Route.team(plugin: BuildContest) {
         // 验证每个成员名是否符合格式
         for (member in members) {
             if (!FieldValidator.validate("member", member, memberNameRegex)) {
-                call.respond(HttpStatusCode.BadRequest, "成员名 $member 格式不正确。只能包含字母、数字和下划线，长度为 3-16 个字符。")
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    "成员名 $member 格式不正确。只能包含字母、数字和下划线，长度为 3-16 个字符。"
+                )
                 return@post
             }
 

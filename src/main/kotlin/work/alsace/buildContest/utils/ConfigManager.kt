@@ -162,6 +162,19 @@ class ConfigManager(private val plugin: BuildContest) {
     }
 
     /**
+     * 检查给定的队伍 ID 是否已经存在。
+     *
+     * @param teamId 要检查的队伍 ID。
+     * @return 如果队伍 ID 已存在，则返回 true；否则返回 false。
+     */
+    fun isTeamIdDuplicate(teamId: String): Boolean {
+        // 从数据中获取所有队伍
+        val teams = data["teams"] as? Map<String, Map<String, Any>> ?: return false
+        // 检查队伍 ID 是否存在
+        return teams.containsKey(teamId)
+    }
+
+    /**
      * 判断指定成员是否存在于任何队伍中。
      *
      * @param member 成员名称。
