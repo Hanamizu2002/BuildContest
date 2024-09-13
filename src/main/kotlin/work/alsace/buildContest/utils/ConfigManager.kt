@@ -78,6 +78,29 @@ class ConfigManager(private val plugin: BuildContest) {
     }
 
     /**
+     * 获取队伍 ID 和其对应端口号的 Map。
+     *
+     * @return 包含队伍 ID 和端口号的 Map，如果数据不存在则返回空的 Map。
+     */
+    fun getTeamIdPortMap(): Map<String, Int> {
+        // 从数据中获取所有队伍
+        val teams = data["teams"] as? Map<String, Map<String, Any>> ?: return emptyMap()
+
+        // 构建一个 Map，将队伍 ID 和端口号对应起来
+        val teamPortMap = mutableMapOf<String, Int>()
+
+        // 遍历每个队伍的条目
+        teams.forEach { (teamId, teamData) ->
+            // 从队伍数据中获取端口号
+            val port = teamData["port"] as? Int ?: return@forEach
+            // 将队伍 ID 和端口号加入 Map
+            teamPortMap[teamId] = port
+        }
+
+        return teamPortMap
+    }
+
+    /**
      * 读取数据文件中的队伍 ID 列表。
      *
      * @return 队伍 ID 列表，如果没有队伍则返回空列表。
@@ -120,6 +143,42 @@ class ConfigManager(private val plugin: BuildContest) {
     }
 
     /**
+     * 根据成员名称查找其所属的队伍 ID。
+     *
+     * @param member 成员名称。
+     * @return 队伍 ID，如果成员未找到则返回 null。
+     */
+    fun getTeamIdByMember(member: String): String? {
+        // 从数据中获取所有队伍
+        val teams = data["teams"] as? Map<String, Map<String, Any>> ?: return null
+
+        // 查找队伍中包含该成员的队伍 ID
+        return teams.entries.find { entry ->
+            // 获取队伍中的成员列表并转换为 List<String>
+            val members = entry.value["members"] as? List<*> ?: return@find false
+            // 检查成员是否在列表中
+            members.contains(member)
+        }?.key
+    }
+
+    /**
+     * 判断指定成员是否存在于任何队伍中。
+     *
+     * @param member 成员名称。
+     * @return 如果成员存在于其他队伍中，则返回 true，否则返回 false。
+     */
+    fun isMemberInAnyTeam(member: String): Boolean {
+        // 从数据中获取所有队伍
+        val teams = data["teams"] as? Map<String, Map<String, Any>> ?: return false
+
+        // 遍历所有队伍，检查成员是否存在
+        return teams.any { entry ->
+            val members = entry.value["members"] as? List<*> ?: return@any false
+            members.contains(member)
+        }
+    }
+
+    /**
      * 将新队伍添加到数据文件中，并保存更新。
      *
      * @param teamId 队伍 ID。
@@ -128,7 +187,8 @@ class ConfigManager(private val plugin: BuildContest) {
      * @param members 队伍成员列表。
      */
     fun addNewTeam(teamId: String, teamName: String, port: Int, members: List<String>) {
-        val teams = data.getOrPut("teams") { mutableMapOf<String, Map<String, Any>>() } as MutableMap<String, Map<String, Any>>
+        val teams =
+            data.getOrPut("teams") { mutableMapOf<String, Map<String, Any>>() } as MutableMap<String, Map<String, Any>>
         teams[teamId] = mapOf("name" to teamName, "port" to port, "members" to members)
 
         // 保存更新后的数据

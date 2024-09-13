@@ -6,8 +6,9 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.proxy.ProxyServer
 import org.slf4j.Logger
-import work.alsace.buildContest.commands.StartServerCommand
+import work.alsace.buildContest.commands.ContestCommand
 import work.alsace.buildContest.ktor.KtorApplication
+import work.alsace.buildContest.listeners.PlayerListener
 import work.alsace.buildContest.services.ContestService
 import work.alsace.buildContest.utils.ConfigManager
 import work.alsace.buildContest.utils.DockerManager
@@ -44,13 +45,37 @@ class BuildContest @Inject constructor(
         // 注册命令
         server.commandManager.register(
             "contest",
-            StartServerCommand(contestService)
+            ContestCommand(contestService)
         )
+
+        //注册监听器
+        server.eventManager.register(this, PlayerListener(this))
+
+        //注册子服
+        registerServersOnStartup()
 
         // 启动ktor
         ktorApplication = KtorApplication(this, logger)
         ktorApplication.start()
 
         logger.info("BuildContest 插件已初始化。")
+    }
+
+    /**
+     * 根据配置注册子服务器。
+     */
+    private fun registerServersOnStartup() {
+        // 获取队伍 ID 和端口的映射
+        val teamPortMap = configManager.getTeamIdPortMap()
+
+        if (teamPortMap.isEmpty()) {
+            logger.info("未找到需要注册的子服务器信息。")
+            return
+        }
+
+        // 遍历映射并注册子服务器
+        teamPortMap.forEach { (teamId, port) ->
+            contestService.registerServerToVelocity(teamId, port)
+        }
     }
 }
