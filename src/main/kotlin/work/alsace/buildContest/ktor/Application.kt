@@ -77,8 +77,7 @@ class KtorApplication(private val plugin: BuildContest, private val logger: Logg
         // 路由配置
         routing {
             authenticate("auth-bearer") {
-                // 从插件中获取 contestService 实例
-                team(plugin) // 调用控制器，传入业务服务实例
+                team(plugin)
             }
         }
     }
