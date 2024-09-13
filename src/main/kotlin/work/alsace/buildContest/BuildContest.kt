@@ -37,13 +37,14 @@ class BuildContest @Inject constructor(
      */
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
+        // 加载服务
         dockerManager = DockerManager(this, pluginPath)
         configManager = ConfigManager(this)
         contestService = ContestService(server, this)
-        //注册监听器
+        // 注册监听器
         server.eventManager.register(this, PlayerListener(this))
 
-        //注册子服
+        // 注册子服
         registerServersOnStartup()
 
         // 启动ktor

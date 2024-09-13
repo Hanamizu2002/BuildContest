@@ -7,7 +7,7 @@ services:
       - #SERVER_PORT_PLACEHOLDER:25565
     volumes:
       # 将本地地图目录挂载到容器内指定的路径
-      - ./data/#SERVER_NAME_PLACEHOLDER/world:/app/world
+      - ./worlds/#SERVER_NAME_PLACEHOLDER/world:/app/world
     environment:
       EULA: "TRUE"
     restart: unless-stopped
