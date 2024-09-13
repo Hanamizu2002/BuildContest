@@ -6,7 +6,6 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.proxy.ProxyServer
 import org.slf4j.Logger
-import work.alsace.buildContest.commands.ContestCommand
 import work.alsace.buildContest.ktor.KtorApplication
 import work.alsace.buildContest.listeners.PlayerListener
 import work.alsace.buildContest.services.ContestService
@@ -41,13 +40,6 @@ class BuildContest @Inject constructor(
         dockerManager = DockerManager(this, pluginPath)
         configManager = ConfigManager(this)
         contestService = ContestService(server, this)
-
-        // 注册命令
-        server.commandManager.register(
-            "contest",
-            ContestCommand(contestService)
-        )
-
         //注册监听器
         server.eventManager.register(this, PlayerListener(this))
 
