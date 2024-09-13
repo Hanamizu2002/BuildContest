@@ -2,7 +2,6 @@ package work.alsace.buildContest.utils
 
 import org.slf4j.Logger
 import work.alsace.buildContest.BuildContest
-import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -112,7 +111,6 @@ class DockerManager(plugin: BuildContest, private val pluginPath: Path) {
                 "-d"
             )
             logger.warn(pluginPath.toString())
-//            processBuilder.directory(pluginPath.toFile())
             // 合并标准错误流到标准输出流中，以便捕获所有输出
             processBuilder.redirectErrorStream(true)
             val process = processBuilder.start()

@@ -23,9 +23,22 @@ class ContestService(
      * @return 下一个可用的端口号。
      */
     private fun getNextAvailablePort(): Int {
+        // 递增下一个可用的端口号
         nextAvailablePort++
-        plugin.configManager.setStartPort(nextAvailablePort)
-        return nextAvailablePort
+
+        // 从当前的 nextAvailablePort 开始查找，直到 65535
+        for (port in nextAvailablePort..65535) {
+            // 检查端口是否已经被使用
+            if (!plugin.configManager.isPortExist(port)) {
+                // 设置并更新下一个可用的端口号
+                nextAvailablePort = port
+                plugin.configManager.setStartPort(nextAvailablePort)
+                return nextAvailablePort
+            }
+        }
+
+        // 如果所有端口都被占用，抛出异常或返回一个错误值（根据具体需求进行处理）
+        throw IllegalStateException("没有可用的端口号")
     }
 
     /**

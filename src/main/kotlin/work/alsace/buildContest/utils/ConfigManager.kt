@@ -192,6 +192,21 @@ class ConfigManager(private val plugin: BuildContest) {
     }
 
     /**
+     * 检查给定的端口号是否已存在于任何队伍中。
+     *
+     * @param port 要检查的端口号。
+     * @return 如果端口号已存在于其他队伍中，则返回 true，否则返回 false。
+     */
+    fun isPortExist(port: Int): Boolean {
+        val teams = data["teams"] as? Map<String, Map<String, Any>> ?: return false
+
+        return teams.any { entry ->
+            val portValue = entry.value["port"] as? Int ?: return@any false
+            portValue == port
+        }
+    }
+
+    /**
      * 将新队伍添加到数据文件中，并保存更新。
      *
      * @param teamId 队伍 ID。
