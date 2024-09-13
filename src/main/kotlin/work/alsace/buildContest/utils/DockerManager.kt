@@ -2,9 +2,11 @@ package work.alsace.buildContest.utils
 
 import org.slf4j.Logger
 import work.alsace.buildContest.BuildContest
+import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 
 /**
@@ -16,7 +18,7 @@ import java.nio.file.StandardOpenOption
  */
 class DockerManager(plugin: BuildContest, private val pluginPath: Path) {
 
-    private val dockerComposePath: Path = pluginPath.resolve("docker-compose-default.yml")
+    private val dockerComposePath: Path = pluginPath.resolve("docker-compose.yml")
     private val logger: Logger = plugin.logger
 
     /**
@@ -57,16 +59,27 @@ class DockerManager(plugin: BuildContest, private val pluginPath: Path) {
      */
     @Throws(IOException::class)
     private fun generateDockerCompose(serverName: String, port: Int) {
-        // 使用模板文件，防止替换后丢失占位符
+        // 定义模板文件路径
         val templatePath = pluginPath.resolve("docker-compose-default.yml")
 
-        // 确保模板文件存在并正确读取
+        // 确保模板文件存在
         if (!Files.exists(templatePath)) {
             logger.error("模板文件不存在: ${templatePath.toAbsolutePath()}")
             return
         }
 
-        var content = Files.readString(templatePath) // 读取模板文件
+        // 定义目标文件路径，将模板文件复制到这个路径
+        val targetPath = pluginPath.resolve("docker-compose.yml")
+
+        if (Files.exists(targetPath)) {
+            Files.delete(targetPath)
+        }
+
+        // 复制模板文件到目标路径
+        Files.copy(templatePath, targetPath, StandardCopyOption.REPLACE_EXISTING)
+
+        // 读取目标文件内容
+        var content = Files.readString(targetPath)
 
         // 替换占位符
         val replacements = mapOf(
@@ -74,13 +87,14 @@ class DockerManager(plugin: BuildContest, private val pluginPath: Path) {
             "#SERVER_PORT_PLACEHOLDER" to port.toString()
         )
 
+        // 执行替换操作
         replacements.forEach { (key, value) ->
             content = content.replace(key, value)
         }
 
-        // 将替换后的内容写入 docker-compose.yml
-        Files.writeString(dockerComposePath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
-        logger.info("Docker Compose 文件已生成，服务器名称: {}, 端口: {}", serverName, port)
+        // 将替换后的内容写入目标文件
+        Files.writeString(targetPath, content, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)
+        logger.info("Docker Compose 文件已生成并修改，服务器名称: {}, 端口: {}", serverName, port)
     }
 
     /**
