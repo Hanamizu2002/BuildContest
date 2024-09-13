@@ -54,7 +54,7 @@ class KtorApplication(private val plugin: BuildContest, private val logger: Logg
 
         // 安装 CORS 插件，允许跨域请求
         install(CORS) {
-            anyHost() // 如果需要限制特定的域名，可以在此指定
+            plugin.configManager.getOriginHost()?.let { allowHost(it) }
             allowHeader(HttpHeaders.Authorization)
         }
 

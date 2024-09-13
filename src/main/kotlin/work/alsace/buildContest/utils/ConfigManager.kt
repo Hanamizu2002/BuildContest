@@ -216,6 +216,16 @@ class ConfigManager(private val plugin: BuildContest) {
         saveConfig(config, configFile)
     }
 
+    /**
+     * 获取允许的来源主机。
+     *
+     * @return 允许的来源主机，如果未找到则返回 null。
+     */
+    fun getOriginHost(): String? {
+        val ktorConfig = config["ktor"] as? Map<String, Any> ?: return null
+        return ktorConfig["allow-host"] as? String
+    }
+
 
     /**
      * 加载指定文件，如果文件不存在则创建并写入默认内容。
