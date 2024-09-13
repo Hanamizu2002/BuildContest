@@ -1,0 +1,20 @@
+teams:
+  team_1:
+    name: "队伍1"
+    port: 30000
+    members:
+      - "Haoyuan_luo"
+      - "Hanamizu_"
+  team_2:
+    port: 30001
+    name: "队伍2"
+    members:
+      - "CHuNan_"
+      - "Pudding_Java"
+  team_3:
+    port: 30002
+    name: "队伍3"
+    members:
+      - "MATSharer"
+      - "Player2"
+      - "Player3"

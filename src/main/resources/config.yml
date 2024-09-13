@@ -1,0 +1,5 @@
+ktor:
+  http-port: 8080
+  port-start: 30000
+  bearer-token:
+
