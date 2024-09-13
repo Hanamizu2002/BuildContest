@@ -34,7 +34,7 @@ class DockerManager(plugin: BuildContest, private val pluginPath: Path) {
             generateDockerCompose(serverName, port)
 
             // 使用 docker-compose 启动容器
-            val isStarted = startWithDockerCompose()
+            val isStarted = startWithDockerCompose(serverName)
             if (isStarted) {
                 logger.info("Docker 容器通过 docker-compose 启动成功，服务器名称: $serverName")
             } else {
@@ -102,11 +102,12 @@ class DockerManager(plugin: BuildContest, private val pluginPath: Path) {
      *
      * @return 启动是否成功。
      */
-    private fun startWithDockerCompose(): Boolean {
+    private fun startWithDockerCompose(serverName: String): Boolean {
         return try {
             val processBuilder = ProcessBuilder(
                 "docker-compose",
                 "-f", dockerComposePath.toString(),
+                "-p", serverName,
                 "up",
                 "-d"
             )

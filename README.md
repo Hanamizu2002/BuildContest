@@ -15,23 +15,26 @@ BuildContest 是一个 Velocity 插件，解决建筑比赛单队单服配置繁
     - 需要安装 [Velocity](https://velocitypowered.com/) 代理服务器。
     - 确保已安装 Docker 和 Docker Compose，且配置正确。
 
-2**制作一个 Minecraft 比赛服务端（子服）**
+2. **制作一个 Minecraft 比赛服务端（子服）**
     - 推荐使用[小扳手](https://www.minebbs.com/resources/1-20-4.8372/)作为服务端
     - 端口配置为25565
     - 配置 Dockerfile，用于构建镜像。
     - 打包镜像，如：`docker build -t minecraft-contest:latest .`
     - 创建docker-compose.yml文件，用于启动子服务器。
 
-3**构建插件**
+3. **构建插件**
     - 通过 Gradle 构建本插件。
 
-4**配置插件**
+4. **配置插件**
     - 将插件 jar 文件放入 `plugins/` 目录中。
     - 启动 Velocity 服务器一次以生成配置文件，然后停止服务器进行配置。
 
-5**配置文件**
+5. **配置文件**
     - 在 `plugins/BuilderContest/` 目录下修改 `config.yml` 文件，配置端口等信息。
     - 将 `docker-compose-default.yml` 放置在插件目录下，用于作为启动子服务器的模板。
+
+6. **启动服务器**
+    - 启动服务器，获取 `config.yml` 中生成的 `bearer-token`。
 
 ## 配置文件说明
 
@@ -57,7 +60,7 @@ services:
       - #SERVER_PORT_PLACEHOLDER:25565
     volumes:
       # 将本地地图目录挂载到容器内指定的路径
-      - ./data/#SERVER_NAME_PLACEHOLDER/world:/app/world
+      - ./worlds/#SERVER_NAME_PLACEHOLDER/world:/app/world
     environment:
       EULA: "TRUE"
     restart: unless-stopped
@@ -75,9 +78,8 @@ services:
 
 ```bash
 curl --location --request POST 'http://localhost:8080/team/add' \
---header 'User-Agent: Apifox/1.0.0 (https://apifox.com)' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer sSCj4piDoEfV2zIo_C8lD7S4ul0YlVOyBr2BkKpdsTI' \
+--header 'Authorization: Bearer sSCj4piDoEfV2zIo_C8lD7S4ul0YlVOyBr2BkKpdsTI（请从config.yml中获取）' \
 --data-raw '{
     "teamId": "team_1",
     "teamName": "队伍1",
