@@ -15,15 +15,19 @@ BuildContest 是一个 Velocity 插件，解决建筑比赛单队单服配置繁
     - 需要安装 [Velocity](https://velocitypowered.com/) 代理服务器。
     - 确保已安装 Docker 和 Docker Compose，且配置正确。
 
-2. **制作一个 Minecraft 比赛服务端（子服）**
+2. **制作一个 Minecraft 比赛服务端镜像（子服）**
     - 推荐使用[小扳手](https://www.minebbs.com/resources/1-20-4.8372/)作为服务端
-    - 端口配置为25565
+    - 端口配置为25565，需保证此端可以正常通过代理端访问，例如配置forwarding-mode等。
     - 配置 Dockerfile，用于构建镜像。
     - 打包镜像，如：`docker build -t minecraft-contest:latest .`
     - 创建docker-compose.yml文件，用于启动子服务器。
 
 3. **构建插件**
     - 通过 Gradle 构建本插件。
+
+   ```bash
+   ./gradlew shadowjar
+   ```
 
 4. **配置插件**
     - 将插件 jar 文件放入 `plugins/` 目录中。
